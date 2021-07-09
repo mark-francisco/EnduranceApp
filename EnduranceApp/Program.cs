@@ -7,18 +7,23 @@ namespace EnduranceApp
 {
     class Program
     {
-        // instructions:
+        // instructions (for now):
         // user must change filepath to represent the directory on their machine on which the application lives
         // user must pass in .txt files to the console app as fn arguments
         static void Main(string[] args)
         {
+            //TODO: figure out how to get a more dynamic filepath...
             string filepath = @$"/Users/juanmarcofrancisco/Actualize/VisualStudioProjects/EnduranceApp/ExampleMazes/{args[0]}";
             Console.WriteLine(filepath);
             List<string> rows = File.ReadLines(filepath).ToList();
             //Console.WriteLine(rows);
 
+            int numRows = 0;
+            int numCols = 0;
+
+            List<Cell> allCells = new List<Cell>();
+
             int i = 0;
-            //List<string[]> cells = new List<string[]>();
             foreach (string row in rows)
             {
                 int rowNum = i + 1;
@@ -29,12 +34,28 @@ namespace EnduranceApp
                 {
                     int columnNum = j + 1;
                     //create an array of values (1's and 0's) from the .txt file. use the outer and inner indexes to get the y and x coordinates.
-                    Console.WriteLine("Y: " + rowNum + ", X: " + columnNum + ", value: " + cells[j]);
+                    //Console.WriteLine("Y: " + rowNum + ", X: " + columnNum + ", value: " + cells[j]);
+                    Cell newCell = new Cell();
+                    newCell.Value = Convert.ToInt16(cells[j]);
+                    newCell.Y = rowNum;
+                    newCell.X = columnNum;
+                    allCells.Add(newCell);
                     j++;
                 }
                 i++;
+                numRows = i;
+                numCols = j;
             }
-            
+            //Console.WriteLine($"number of rows in maze: {numRows}");
+            //Console.WriteLine($"number of cols in maze: {numCols}");
+            foreach (Cell cell in allCells)
+            {
+                Console.WriteLine("Cell:");
+                Console.WriteLine("Value: " + cell.Value);
+                Console.WriteLine("Y: " + cell.Y);
+                Console.WriteLine("X: " + cell.X);
+            }
+
             Console.ReadLine();
         }
 
@@ -42,10 +63,7 @@ namespace EnduranceApp
         {
 
             //www.techiedelight.com/find-shortest-path-in-maze/
-
-            //numRows = outer index + 1.
-
-            //Classes: Maze: numRows,numCols. cells: value, xCoord, yCoord. currentCell: value, xCoord, yCoord.  
+            //Classes: cells: value, xCoord, yCoord. currentCell: value, xCoord, yCoord.  
 
             //allCells = matrix
             //allCells.each { |cell|
