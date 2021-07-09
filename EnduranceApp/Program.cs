@@ -18,10 +18,19 @@ namespace EnduranceApp
             //TODO: split out functionality into separate components: functions and classes/objects.
             //TODO: allow User to pass in multiple mazes as arguments at once
             //TODO: re-factor code and work on improving efficiency
-            string filepath = @$"/Users/juanmarcofrancisco/Actualize/VisualStudioProjects/EnduranceApp/ExampleMazes/{args[0]}";
-            Console.WriteLine(filepath);
+
+            foreach(string arg in args)
+            {
+                SolveMaze(arg);
+                Console.WriteLine("---------------");
+            }
+            Console.ReadLine();
+        }
+        //for each args passed into Main, run SolveMaze. SolveMaze uses ValidateCellNotChecked, ValidateInBounds.
+        static void SolveMaze(string maze) {
+
+            string filepath = @$"/Users/juanmarcofrancisco/Actualize/VisualStudioProjects/EnduranceApp/ExampleMazes/{maze}";
             List<string> rows = File.ReadLines(filepath).ToList();
-            //Console.WriteLine(rows);
 
             int numRows = 0;
             int numCols = 0;
@@ -50,7 +59,6 @@ namespace EnduranceApp
                 numCols = j;
             }
 
-
             //www.techiedelight.com/find-shortest-path-in-maze/
             //Assumption: there is only one legitimate path.
             //Approach: traverse thru each possible route as far as you can. see if you can hit the end. if not, backtrack as necessary.
@@ -64,22 +72,27 @@ namespace EnduranceApp
             var solutionCell = nodes[nodes.Count() - 1];
             Console.WriteLine("Solution cell is: " + GetAllProperties(solutionCell));
 
-            //then the check would be: is there a Cell in nodes whose Y and X coordinates match this potential move?
-            //checked = [] (array of cells). initialize this var to represent which cells/nodes have already been checked.
+            var checkedCells = new List<Cell>();
 
-            //foundSolution = false
-            //path = [] (array of arrays)
-
-
-            //currentCell = nodes[0]. start with the first cell in the array (the one with a y-coordinate of 1).
+            var foundSolution = false;
+            var path = new List<string>();
 
 
-            //if foundSolution == true, add currentCell to path array and return.
+            //start with the first cell in the array (the one with a y-coordinate of 1).
+            var currentCell = nodes[0];
 
-            //if currentCell == solutionCell, set foundSolution = true. return true. recursively go back up the fn calls in the call stack.
-            //TODO: figure out how to go back one recursive call in the call stack in C#.
+            if (currentCell == solutionCell)
+            {
+                foundSolution = true;
+                path.Insert(0, $"({currentCell.Y},{currentCell.X})");
+                //recursively go back up the fn calls in the call stack.
+                //TODO: figure out how to go back one recursive call in the call stack in C#.
+            }
 
-            //run the 4 neighbor checks: for each neighbor, check if it's a valid move:
+
+
+            //run the 4 neighbor checks: for each neighbor, is there a Cell in nodes whose Y and X coordinates would match this potential move?
+            //Criteria:
             ////targetCell must be adjacent to currentCell (currentCell to targetCell neighbor comparison logic).
             ////target cell's value must be 1 (targetCell IN nodes).
             ////targetCell hasn't been traversed/checked yet (targetCell NOT IN checked[]).
@@ -103,13 +116,14 @@ namespace EnduranceApp
 
             //at the end, map the Cell objects in path to [y,x] array items.
 
-            Console.ReadLine();
-        }
 
-        //for each args passed into Main, run SolveMaze. SolveMaze uses ValidateCellNotChecked, ValidateInBounds.
-        static void SolveMaze() {}
+
+
+        }
+        static void CheckMazeMove() { }
         static void ValidateCellNotChecked() { }
-        static void ValidateInBounds() { }
+        static void ValidateCellInBounds() { }
+
         public static string GetAllProperties(object obj)
         {
             return string.Join(" ", obj.GetType()
