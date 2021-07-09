@@ -7,6 +7,8 @@ namespace EnduranceApp
 {
     class Program
     {
+
+
         // instructions (for now):
         // user must change filepath to represent the directory on their machine on which the application lives
         // user must pass in .txt files to the console app as fn arguments
@@ -30,7 +32,6 @@ namespace EnduranceApp
             foreach (string row in rows)
             {
                 int rowNum = i + 1;
-                //Console.WriteLine("row " + rowNum + ": " + row);
                 string[] cells = row.Split(" ");
                 int j = 0;
                 while (j < cells.Count())
@@ -48,29 +49,22 @@ namespace EnduranceApp
                 numRows = i;
                 numCols = j;
             }
-            //Console.WriteLine($"number of rows in maze: {numRows}");
-            //Console.WriteLine($"number of cols in maze: {numCols}");
-
-            //foreach (Cell cell in allCells)
-            //{
-            //    Console.WriteLine("Cell:");
-            //    Console.WriteLine("Value: " + cell.Value);
-            //    Console.WriteLine("Y: " + cell.Y);
-            //    Console.WriteLine("X: " + cell.X);
-            //}
-
 
 
             //www.techiedelight.com/find-shortest-path-in-maze/
             //Assumption: there is only one legitimate path.
             //Approach: traverse thru each possible route as far as you can. see if you can hit the end. if not, backtrack as necessary.
 
+            var nodes = allCells.FindAll(cell => cell.Value == 1);
+            foreach (Cell node in nodes)
+            {
+                Console.WriteLine(GetAllProperties(node));
+            }
 
-            //filter out only the cells that are 1's. iterate thru allCells. put all the Cells with 1's in an array.
-            //nodes = [].
+            var solutionCell = nodes[nodes.Count() - 1];
+            Console.WriteLine("Solution cell is: " + GetAllProperties(solutionCell));
+
             //then the check would be: is there a Cell in nodes whose Y and X coordinates match this potential move?
-
-            //solutionCell = nodes[nodes.Count() - 1];
             //checked = [] (array of cells). initialize this var to represent which cells/nodes have already been checked.
 
             //foundSolution = false
@@ -113,9 +107,14 @@ namespace EnduranceApp
         }
 
         //for each args passed into Main, run SolveMaze. SolveMaze uses ValidateCellNotChecked, ValidateInBounds.
-        static void SolveMaze()
-        {}
+        static void SolveMaze() {}
         static void ValidateCellNotChecked() { }
         static void ValidateInBounds() { }
+        public static string GetAllProperties(object obj)
+        {
+            return string.Join(" ", obj.GetType()
+                                        .GetProperties()
+                                        .Select(prop => prop.GetValue(obj)));
+        }
     }
 }
