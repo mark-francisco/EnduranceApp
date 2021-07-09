@@ -27,9 +27,11 @@ namespace EnduranceApp
 
         static void SolveMaze(string maze) {
 
+            // Set up Maze
             string mazeFile = Globals.mazesFilepath + maze;
             List<string> rows = File.ReadLines(mazeFile).ToList();
 
+            // Format the board with all cells from .txt file
             List<Cell> allCells = new List<Cell>();
 
             int i = 0;
@@ -41,7 +43,6 @@ namespace EnduranceApp
                 while (j < cells.Count())
                 {
                     int columnNum = j + 1;
-                    //Console.WriteLine("Y: " + rowNum + ", X: " + columnNum + ", value: " + cells[j]);
                     Cell newCell = new Cell();
                     newCell.Value = Convert.ToInt16(cells[j]);
                     newCell.Y = rowNum;
@@ -54,33 +55,34 @@ namespace EnduranceApp
                 Globals.numCols = j;
             }
 
-            //Assumption: there is only one legitimate path. Approach: traverse thru each possible route as far as you can. see if you can hit the end. if not, backtrack as necessary.
-
-
+            // Filter for only the valid maze spaces
             var nodes = allCells.FindAll(cell => cell.Value == 1);
+
             Console.WriteLine("List of valid spaces:");
             foreach (Cell node in nodes)
             {
                 Console.WriteLine(GetAllProperties(node));
             }
 
+            // Define the end goal
             Globals.solutionCell = nodes[nodes.Count() - 1];
             Console.WriteLine("Solution cell is: " + GetAllProperties(Globals.solutionCell));
 
 
-            
+            ////////////////////////////////////////////////////////
+
+
+            //Start with the first cell in the array (there's only 1 node with a y-coordinate of 1).
+            var currentCell = nodes[0];
             var foundSolution = false;
 
-
-            //start with the first cell in the array (there's only 1 node with a y-coordinate of 1).
-            var currentCell = nodes[0];
-
-            // check if you've reached the end of the maze
+            // First, check if you've reached the end of the maze
             if (currentCell == Globals.solutionCell)
             {
                 foundSolution = true;
             }
 
+            // If you've reached the end, add that Cell to path. Work your way back and fill in the rest of the path.
             if (foundSolution == true)
             {
                 Globals.path.Insert(0, $"({currentCell.Y},{currentCell.X})");
@@ -88,32 +90,27 @@ namespace EnduranceApp
                 //TODO: figure out how to go back one recursive call in the call stack in C#.
             }
 
-
-
-        }
-
-        static Cell DefineNewCurrentCell(Cell currentCell)
-        {
-
-            // define the 4 neighbors
-            var downNeighbor = currentCell;
-            //check down. targetCell = (y + 1, x).
-            //check left. targetCell = (y, x - 1).
-            //check up. targetCell = (y - 1, x).
-            //check right. targetCell = (y, x + 1).
-            var leftNeighbor = currentCell;
-            var upNeighbor = currentCell;
-            var rightNeighbor = currentCell;
+            // Otherwise, you're not done with the maze yet. Check if you can make a move to one of the neighboring Cells.
+            // Define the 4 neighbors.
+            //down: (y + 1, x).
+            var downNeighbor = nodes.Find(node => node.Y == currentCell.Y + 1 && node.X == currentCell.X);
+            //left: (y, x - 1).
+            var leftNeighbor = nodes.Find(node => node.Y == currentCell.Y && node.X == currentCell.X - 1);
+            //up: (y - 1, x).
+            var upNeighbor = nodes.Find(node => node.Y == currentCell.Y - 1 && node.X == currentCell.X);
+            //right: (y, x + 1).
+            var rightNeighbor = nodes.Find(node => node.Y == currentCell.Y && node.X == currentCell.X + 1);
 
             //run the 4 neighbor checks: for each neighbor, is there a Cell in nodes whose Y and X coordinates would match this potential move? if so, return that Cell and break out of this fn.
-            CheckMazeMove(currentCell, downNeighbor);
-            CheckMazeMove(currentCell, leftNeighbor);
-            CheckMazeMove(currentCell, upNeighbor);
-            CheckMazeMove(currentCell, rightNeighbor);
+            ValidMazeMove(currentCell, downNeighbor);
+            ValidMazeMove(currentCell, leftNeighbor);
+            ValidMazeMove(currentCell, upNeighbor);
+            ValidMazeMove(currentCell, rightNeighbor);
+
 
         }
 
-        static bool CheckMazeMove(Cell currentCell, Cell targetCell)
+        static bool ValidMazeMove(Cell currentCell, Cell targetCell)
         {
             //returns true or false
             return true;
@@ -142,12 +139,12 @@ namespace EnduranceApp
         }
 
 
-        static bool ValidateCellNotChecked() {
+        static bool ValidateCellNotChecked(Cell cellToCheck) {
             //returns true or false
             return true;
 
         }
-        static bool ValidateCellInBounds() {
+        static bool ValidateCellInBounds(Cell cellToCheck) {
             //returns true or false
             return true;
         }

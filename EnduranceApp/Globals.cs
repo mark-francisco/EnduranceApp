@@ -13,6 +13,7 @@ namespace EnduranceApp
         public static List<Cell> checkedCells;
         public static int numRows;
         public static int numCols;
+        public static List<string> path;
         
     }
 }
