@@ -7,18 +7,15 @@ namespace EnduranceApp
 {
     class Program
     {
-
-
         // instructions (for now):
         // user must change filepath to represent the directory on their machine on which the application lives
         // user must pass in .txt files to the console app as fn arguments
+
+        //TODO: re-factor code. split functionality into separate components: functions and classes.
+
+
         static void Main(string[] args)
         {
-            //TODO: figure out how to get a more dynamic filepath...
-            //TODO: split out functionality into separate components: functions and classes/objects.
-            //TODO: allow User to pass in multiple mazes as arguments at once
-            //TODO: re-factor code and work on improving efficiency
-
             foreach(string arg in args)
             {
                 SolveMaze(arg);
@@ -26,14 +23,12 @@ namespace EnduranceApp
             }
             Console.ReadLine();
         }
-        //for each args passed into Main, run SolveMaze. SolveMaze uses ValidateCellNotChecked, ValidateInBounds.
+
+
         static void SolveMaze(string maze) {
 
-            string filepath = @$"/Users/juanmarcofrancisco/Actualize/VisualStudioProjects/EnduranceApp/ExampleMazes/{maze}";
-            List<string> rows = File.ReadLines(filepath).ToList();
-
-            int numRows = 0;
-            int numCols = 0;
+            string mazeFile = Globals.mazesFilepath + maze;
+            List<string> rows = File.ReadLines(mazeFile).ToList();
 
             List<Cell> allCells = new List<Cell>();
 
@@ -55,53 +50,81 @@ namespace EnduranceApp
                     j++;
                 }
                 i++;
-                numRows = i;
-                numCols = j;
+                Globals.numRows = i;
+                Globals.numCols = j;
             }
 
-            //www.techiedelight.com/find-shortest-path-in-maze/
-            //Assumption: there is only one legitimate path.
-            //Approach: traverse thru each possible route as far as you can. see if you can hit the end. if not, backtrack as necessary.
+            //Assumption: there is only one legitimate path. Approach: traverse thru each possible route as far as you can. see if you can hit the end. if not, backtrack as necessary.
+
 
             var nodes = allCells.FindAll(cell => cell.Value == 1);
+            Console.WriteLine("List of valid spaces:");
             foreach (Cell node in nodes)
             {
                 Console.WriteLine(GetAllProperties(node));
             }
 
-            var solutionCell = nodes[nodes.Count() - 1];
-            Console.WriteLine("Solution cell is: " + GetAllProperties(solutionCell));
+            Globals.solutionCell = nodes[nodes.Count() - 1];
+            Console.WriteLine("Solution cell is: " + GetAllProperties(Globals.solutionCell));
 
-            var checkedCells = new List<Cell>();
 
+            
             var foundSolution = false;
-            var path = new List<string>();
 
 
-            //start with the first cell in the array (the one with a y-coordinate of 1).
+            //start with the first cell in the array (there's only 1 node with a y-coordinate of 1).
             var currentCell = nodes[0];
 
-            if (currentCell == solutionCell)
+            // check if you've reached the end of the maze
+            if (currentCell == Globals.solutionCell)
             {
                 foundSolution = true;
-                path.Insert(0, $"({currentCell.Y},{currentCell.X})");
+            }
+
+            if (foundSolution == true)
+            {
+                Globals.path.Insert(0, $"({currentCell.Y},{currentCell.X})");
                 //recursively go back up the fn calls in the call stack.
                 //TODO: figure out how to go back one recursive call in the call stack in C#.
             }
 
 
 
-            //run the 4 neighbor checks: for each neighbor, is there a Cell in nodes whose Y and X coordinates would match this potential move?
-            //Criteria:
-            ////targetCell must be adjacent to currentCell (currentCell to targetCell neighbor comparison logic).
-            ////target cell's value must be 1 (targetCell IN nodes).
-            ////targetCell hasn't been traversed/checked yet (targetCell NOT IN checked[]).
-            ////targetCell is not out of bounds (targetCell.Y <= numRows and targetCell.X <= numCols).
+        }
 
+        static Cell DefineNewCurrentCell(Cell currentCell)
+        {
+
+            // define the 4 neighbors
+            var downNeighbor = currentCell;
             //check down. targetCell = (y + 1, x).
             //check left. targetCell = (y, x - 1).
             //check up. targetCell = (y - 1, x).
             //check right. targetCell = (y, x + 1).
+            var leftNeighbor = currentCell;
+            var upNeighbor = currentCell;
+            var rightNeighbor = currentCell;
+
+            //run the 4 neighbor checks: for each neighbor, is there a Cell in nodes whose Y and X coordinates would match this potential move? if so, return that Cell and break out of this fn.
+            CheckMazeMove(currentCell, downNeighbor);
+            CheckMazeMove(currentCell, leftNeighbor);
+            CheckMazeMove(currentCell, upNeighbor);
+            CheckMazeMove(currentCell, rightNeighbor);
+
+        }
+
+        static bool CheckMazeMove(Cell currentCell, Cell targetCell)
+        {
+            //returns true or false
+            return true;
+            
+            //Criteria:
+            //confirm that targetCell is adjacent to currentCell (currentCell to targetCell neighbor comparison logic).
+            //check if target cell's value is 1 (targetCell IN nodes).
+            //check that targetCell hasn't been traversed/checked yet (targetCell NOT IN checked[]).
+            ////check that targetCell is not out of bounds (targetCell.Y <= numRows and targetCell.X <= numCols).
+
+
 
             //searching thru a list of Objects by property:
             //www.stackoverflow.com/questions/36016144/how-to-get-find-an-object-by-property-value-in-a-list
@@ -114,15 +137,23 @@ namespace EnduranceApp
             //if none of the 4 moves are valid, backtrack. meaning, break out of the function call and go back up one level to the previous fn call (go back 1 level in the stack). run the function again for the previous Cell. it will check for possible valid moves, based on which remaining cells haven't been checked yet.
 
 
-            //at the end, map the Cell objects in path to [y,x] array items.
-
-
 
 
         }
-        static void CheckMazeMove() { }
-        static void ValidateCellNotChecked() { }
-        static void ValidateCellInBounds() { }
+
+
+        static bool ValidateCellNotChecked() {
+            //returns true or false
+            return true;
+
+        }
+        static bool ValidateCellInBounds() {
+            //returns true or false
+            return true;
+        }
+
+
+
 
         public static string GetAllProperties(object obj)
         {
