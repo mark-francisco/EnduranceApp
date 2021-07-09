@@ -15,42 +15,34 @@ namespace EnduranceApp
             string filepath = @$"/Users/juanmarcofrancisco/Actualize/VisualStudioProjects/EnduranceApp/ExampleMazes/{args[0]}";
             Console.WriteLine(filepath);
             List<string> rows = File.ReadLines(filepath).ToList();
-            Console.WriteLine(rows);
+            //Console.WriteLine(rows);
 
             int i = 0;
+            //List<string[]> cells = new List<string[]>();
             foreach (string row in rows)
             {
                 int rowNum = i + 1;
-                Console.WriteLine("row " + rowNum + ": " + row);
+                //Console.WriteLine("row " + rowNum + ": " + row);
                 string[] cells = row.Split(" ");
-                Console.Write(cells);
-
-                //foreach (char cell in row)
-                //{
-                //    //List<string> cells = row.Split(" ");
-                //    Console.Write(cell + ", ");
-                //}
-
+                int j = 0;
+                while (j < cells.Count())
+                {
+                    int columnNum = j + 1;
+                    //create an array of values (1's and 0's) from the .txt file. use the outer and inner indexes to get the y and x coordinates.
+                    Console.WriteLine("Y: " + rowNum + ", X: " + columnNum + ", value: " + cells[j]);
+                    j++;
+                }
                 i++;
             }
-
-            //foreach (string line in lines)
-            //{
-            //    Console.WriteLine(line);
-            //    string[] cells = line.Split(" ");
-
-            //    Cell newRow = new Cell();
-            //}
             
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
         static void SolveMaze(string[] args)
         {
-            
+
             //www.techiedelight.com/find-shortest-path-in-maze/
-            //question: how to parse thru txt files and find out how many rows and columns it has?
-            //create a matrix of values (1's and 0's) from the .txt file. use the outer and inner indexes to get the y and x coordinates.
+
             //numRows = outer index + 1.
 
             //Classes: Maze: numRows,numCols. cells: value, xCoord, yCoord. currentCell: value, xCoord, yCoord.  
