@@ -36,7 +36,6 @@ namespace EnduranceApp
                 while (j < cells.Count())
                 {
                     int columnNum = j + 1;
-                    //create an array of values (1's and 0's) from the .txt file. use the outer and inner indexes to get the y and x coordinates.
                     //Console.WriteLine("Y: " + rowNum + ", X: " + columnNum + ", value: " + cells[j]);
                     Cell newCell = new Cell();
                     newCell.Value = Convert.ToInt16(cells[j]);
@@ -68,9 +67,9 @@ namespace EnduranceApp
 
 
             //filter out only the cells that are 1's. iterate thru allCells. put all the Cells with 1's in an array.
+            //nodes = [].
             //then the check would be: is there a Cell in nodes whose Y and X coordinates match this potential move?
 
-            //nodes = [].
             //solutionCell = nodes[nodes.Count() - 1];
             //checked = [] (array of cells). initialize this var to represent which cells/nodes have already been checked.
 
@@ -79,10 +78,6 @@ namespace EnduranceApp
 
 
             //currentCell = nodes[0]. start with the first cell in the array (the one with a y-coordinate of 1).
-
-
-            //use the Cell's getter methods (Cell.X and Cell.Y) to search thru each Cell in nodes.
-
 
 
             //if foundSolution == true, add currentCell to path array and return.
@@ -109,8 +104,7 @@ namespace EnduranceApp
 
             //if the move is valid for that targetCell, recursively re-run the function again, but with the next node that was moved to (run solveMaze(targetCell)).
 
-            //if none of the 4 moves are valid, backtrack. meaning, break out of the function call and go back up one level to the previous fn call (go back 1 level in the stack). run the function again for the previous cell. it will check for possible valid moves, based on which remaining cells haven't been checked yet.(return false and go back up 1 recursive fn call in the call stack).
-
+            //if none of the 4 moves are valid, backtrack. meaning, break out of the function call and go back up one level to the previous fn call (go back 1 level in the stack). run the function again for the previous Cell. it will check for possible valid moves, based on which remaining cells haven't been checked yet.
 
 
             //at the end, map the Cell objects in path to [y,x] array items.
