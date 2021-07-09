@@ -13,8 +13,8 @@ namespace EnduranceApp
         static void Main(string[] args)
         {
             //TODO: figure out how to get a more dynamic filepath...
-            //TODO: split out functionality into separate methods, classes, components
-            //TODO: allow the User to pass in multiple mazes as arguments at once
+            //TODO: split out functionality into separate components: functions and classes/objects.
+            //TODO: allow User to pass in multiple mazes as arguments at once
             //TODO: re-factor code and work on improving efficiency
             string filepath = @$"/Users/juanmarcofrancisco/Actualize/VisualStudioProjects/EnduranceApp/ExampleMazes/{args[0]}";
             Console.WriteLine(filepath);
@@ -67,48 +67,61 @@ namespace EnduranceApp
             //Approach: traverse thru each possible route as far as you can. see if you can hit the end. if not, backtrack as necessary.
 
 
-            //filter out only the cells that are 1's.
-            //nodes = []. iterate thru allCells. put all the Cells with 1's in an array.
-            //solutionCell = nodes[nodes.Count() - 1];
+            //filter out only the cells that are 1's. iterate thru allCells. put all the Cells with 1's in an array.
+            //then the check would be: is there a Cell in nodes whose Y and X coordinates match this potential move?
 
+            //nodes = [].
+            //solutionCell = nodes[nodes.Count() - 1];
             //checked = [] (array of cells). initialize this var to represent which cells/nodes have already been checked.
 
-
-            //start with the first cell in the array (the one with a y-coordinate of 1). nodes[0].
-
-            //use the Cell's getter methods (Cell.X and Cell.Y) to search thru each Cell in allCells. then at the end, map the Cell objects into [y,x] array items. 
-
-
-
-
-
-            //the edge is whether or not an adjacent cell also exists in nodes and has not been checked yet. (check if the theoretical adjacent targetCell's coordinates exists in nodes AND hasn't been checked yet. if so, it's a valid edge/move.)
-
-
-            //write a function that loops thru the maze (each cell in nodes). first, check if the current node is the solutionCell (if so, then populate the path). then, add that node to the checked array. we are checking whether that node is allowed to make a legitimate move. if so, re-run the function with the next node that was moved to (find that Cell in the nodes array). if not, break out of the function call and go back up one level to the previous fn call (go back 1 level in the stack).
-
-            //start on line 1 and end at line n. stop once you've hit a 1 on the last row of the file.
-            //currentCell = [y,x]
-
+            //foundSolution = false
             //path = [] (array of arrays)
 
-            //define the operations/possible moves: down, left, up, right
-            //define the neighbors. down = (y + 1, x), left = (y, x - 1), up = (y - 1, x), right = (y, x + 1)
-            //check the neighbors. each turn, validate if you can do each of the moves until you get a successful pass.
-            //targetCell must be adjacent to currentCell AND target cell's value must be 1 AND targetCell cannot already have been traversed/checked yet (aka targetCell is not in the checked array).
-            // once you've found a cell that lets you keep going/lets you make the move, recursively call the function again, but with the targetCell as the new currentCell. add targetCell to checked array.
-            //if you can't keep going with a valid move and need to backtrack, backtrack 1 cell/function call. 
-            //try to run the other directions that haven't been checked yet to try and get a possible move. backtrack further (return false and go back up 1 recursive fn call in the call stack) whenever the current cell you're on has no more possible options/moves.
-            //if you reach the solution cell, then return true and recursively go back up the fn calls in the call stack. add the currentCell's coordinates to "path" each time.
+
+            //currentCell = nodes[0]. start with the first cell in the array (the one with a y-coordinate of 1).
 
 
+            //use the Cell's getter methods (Cell.X and Cell.Y) to search thru each Cell in nodes.
+
+
+
+            //if foundSolution == true, add currentCell to path array and return.
+
+            //if currentCell == solutionCell, set foundSolution = true. return true. recursively go back up the fn calls in the call stack.
+            //TODO: figure out how to go back one recursive call in the call stack in C#.
+
+            //run the 4 neighbor checks: for each neighbor, check if it's a valid move:
+            ////targetCell must be adjacent to currentCell (currentCell to targetCell neighbor comparison logic).
+            ////target cell's value must be 1 (targetCell IN nodes).
+            ////targetCell hasn't been traversed/checked yet (targetCell NOT IN checked[]).
+            ////targetCell is not out of bounds (targetCell.Y <= numRows and targetCell.X <= numCols).
+
+            //check down. targetCell = (y + 1, x).
+            //check left. targetCell = (y, x - 1).
+            //check up. targetCell = (y - 1, x).
+            //check right. targetCell = (y, x + 1).
+
+            //searching thru a list of Objects by property:
+            //www.stackoverflow.com/questions/36016144/how-to-get-find-an-object-by-property-value-in-a-list
+            //www.stackoverflow.com/questions/1485766/finding-an-item-in-a-list-using-c-sharp/1485775#1485775
+
+            //for each check, add that node (aka targetCell) to the checked array.
+
+            //if the move is valid for that targetCell, recursively re-run the function again, but with the next node that was moved to (run solveMaze(targetCell)).
+
+            //if none of the 4 moves are valid, backtrack. meaning, break out of the function call and go back up one level to the previous fn call (go back 1 level in the stack). run the function again for the previous cell. it will check for possible valid moves, based on which remaining cells haven't been checked yet.(return false and go back up 1 recursive fn call in the call stack).
+
+
+
+            //at the end, map the Cell objects in path to [y,x] array items.
 
             Console.ReadLine();
         }
 
+        //for each args passed into Main, run SolveMaze. SolveMaze uses ValidateCellNotChecked, ValidateInBounds.
         static void SolveMaze()
         {}
         static void ValidateCellNotChecked() { }
-        static void ValidateValidMove() { }
+        static void ValidateInBounds() { }
     }
 }
