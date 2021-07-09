@@ -18,6 +18,7 @@ namespace EnduranceApp
         {
             foreach(string arg in args)
             {
+                Maze.SetUpMaze();
                 SolveMaze(arg);
                 Console.WriteLine("---------------");
             }
@@ -90,64 +91,83 @@ namespace EnduranceApp
                 //TODO: figure out how to go back one recursive call in the call stack in C#.
             }
 
-            // Otherwise, you're not done with the maze yet. Check if you can make a move to one of the neighboring Cells.
-            // Define the 4 neighbors.
-            //down: (y + 1, x).
-            var downNeighbor = nodes.Find(node => node.Y == currentCell.Y + 1 && node.X == currentCell.X);
-            //left: (y, x - 1).
-            var leftNeighbor = nodes.Find(node => node.Y == currentCell.Y && node.X == currentCell.X - 1);
-            //up: (y - 1, x).
-            var upNeighbor = nodes.Find(node => node.Y == currentCell.Y - 1 && node.X == currentCell.X);
-            //right: (y, x + 1).
-            var rightNeighbor = nodes.Find(node => node.Y == currentCell.Y && node.X == currentCell.X + 1);
+            // Otherwise, you're not done with the maze yet. Check if you can make a move to one of the neighboring Cells. Define the 4 neighbors.
+            //DefineNeighbors(currentCell);
 
-            //run the 4 neighbor checks: for each neighbor, is there a Cell in nodes whose Y and X coordinates would match this potential move? if so, return that Cell and break out of this fn.
-            ValidMazeMove(currentCell, downNeighbor);
-            ValidMazeMove(currentCell, leftNeighbor);
-            ValidMazeMove(currentCell, upNeighbor);
-            ValidMazeMove(currentCell, rightNeighbor);
+            //note to self: this returns a Cell if neighbor exists in nodes array, or null otherwise.
+            var downNeighbor = nodes.FirstOrDefault(node => node.Y == currentCell.Y + 1 && node.X == currentCell.X);
+            var leftNeighbor = nodes.FirstOrDefault(node => node.Y == currentCell.Y && node.X == currentCell.X - 1);
+            var upNeighbor = nodes.FirstOrDefault(node => node.Y == currentCell.Y - 1 && node.X == currentCell.X);
+            var rightNeighbor = nodes.FirstOrDefault(node => node.Y == currentCell.Y && node.X == currentCell.X + 1);
 
 
-        }
+            // if the targetCell exists in the nodes array, proceed to generate the 4 neighbors for that cell and check if ValidMazeMove.
+            //TODO: figure out how to structure the neighbors/checks. need to either use a loop or a separate fn.
+            //TODO: figure out how to work with the call stack in C#.
 
-        static bool ValidMazeMove(Cell currentCell, Cell targetCell)
-        {
-            //returns true or false
-            return true;
-            
-            //Criteria:
-            //confirm that targetCell is adjacent to currentCell (currentCell to targetCell neighbor comparison logic).
-            //check if target cell's value is 1 (targetCell IN nodes).
-            //check that targetCell hasn't been traversed/checked yet (targetCell NOT IN checked[]).
-            ////check that targetCell is not out of bounds (targetCell.Y <= numRows and targetCell.X <= numCols).
+            //if (downNeighbor != null && ValidMazeMove(currentCell, downNeighbor)) {
 
-
-
-            //searching thru a list of Objects by property:
-            //www.stackoverflow.com/questions/36016144/how-to-get-find-an-object-by-property-value-in-a-list
-            //www.stackoverflow.com/questions/1485766/finding-an-item-in-a-list-using-c-sharp/1485775#1485775
-
-            //for each check, add that node (aka targetCell) to the checked array.
-
+            //}
+            //if (leftNeighbor!= null)
+            //{
+            //    ValidMazeMove(currentCell, leftNeighbor);
+            //}
+            //if (upNeighbor != null)
+            //{
+            //    ValidMazeMove(currentCell, upNeighbor);
+            //}
+            //if (rightNeighbor != null)
+            //{
+            //    ValidMazeMove(currentCell, rightNeighbor);
+            //}
             //if the move is valid for that targetCell, recursively re-run the function again, but with the next node that was moved to (run solveMaze(targetCell)).
 
             //if none of the 4 moves are valid, backtrack. meaning, break out of the function call and go back up one level to the previous fn call (go back 1 level in the stack). run the function again for the previous Cell. it will check for possible valid moves, based on which remaining cells haven't been checked yet.
+        }
 
+        //static List<Cell> DefineNeighbors(Cell currentCell)
+        //{
 
+        //}
 
+        static bool ValidMazeMove(Cell currentCell, Cell targetCell)
+        {
+            //Criteria:
+            //check that targetCell is not out of bounds (targetCell.Y <= numRows and targetCell.X <= numCols).
+            //check that targetCell hasn't been traversed/checked yet (targetCell NOT IN checked[]).
+
+            
+            if (ValidateCellInBounds(targetCell) && ValidateCellNotCheckedYet(targetCell))
+            {
+                Globals.checkedCells.Add(targetCell);
+                return true;
+            } else
+            {
+                return false;
+            }
 
         }
 
+        static bool ValidateCellInBounds(Cell cellToCheck)
+        {            
+            if (cellToCheck.Y <= Globals.numRows && cellToCheck.X <= Globals.numCols) {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
 
-        static bool ValidateCellNotChecked(Cell cellToCheck) {
-            //returns true or false
-            return true;
+        static bool ValidateCellNotCheckedYet(Cell cellToCheck) {
+            if (!Globals.checkedCells.Contains(cellToCheck)) {
+                return true;
+            } else
+            {
+                return false;
+            }
 
         }
-        static bool ValidateCellInBounds(Cell cellToCheck) {
-            //returns true or false
-            return true;
-        }
+
 
 
 
