@@ -12,27 +12,23 @@ namespace EnduranceApp
         // user must pass in .txt files to the console app as fn arguments
 
 
-        static void Main(string[] args)
+        static void Main(string[] mazeFiles)
         {
-            foreach (string arg in args)
+            foreach (string mazeFile in mazeFiles)
             {
-                var maze = new Maze();
-                SetUpMaze(arg);
-                Console.WriteLine("Path: ");
-                foreach(Cell pathCell in Globals.path)
-                {
-                    Console.WriteLine(GetAllProperties(pathCell));
-                }
+                SetUpMaze(mazeFile);               
                 Console.WriteLine("---------------");
             }
             Console.ReadLine();
         }
 
-        static void SetUpMaze(string maze)
+        static void SetUpMaze(string mazeFile)
         {
-            // Set up Maze
-            string mazeFile = Globals.mazesFilepath + maze;
-            List<string> rows = File.ReadLines(mazeFile).ToList();
+            //instantiate new Maze Object
+            var currentMaze = new Maze();
+
+            // Read from the filepath
+            List<string> rows = File.ReadLines(Globals.mazesDirectory + mazeFile).ToList();
 
             // Format the board with all cells from .txt file
             List<Cell> allCells = new List<Cell>();
@@ -54,92 +50,91 @@ namespace EnduranceApp
                     j++;
                 }
                 i++;
-                Globals.numRows = i;
-                Globals.numCols = j;
+                currentMaze.numRows = i;
+                currentMaze.numCols = j;
             }
 
             // Filter for only the valid maze spaces
-            Globals.nodes = allCells.FindAll(cell => cell.Value == 1);
-
-            //Console.WriteLine("List of allowed spaces:");
-            //foreach (Cell node in Globals.nodes)
-            //{
-            //    Console.WriteLine(GetAllProperties(node));
-            //}
+            currentMaze.nodes = allCells.FindAll(cell => cell.Value == 1);
 
             // Define the end goal
-            Globals.solutionCell = Globals.nodes[Globals.nodes.Count() - 1];            
+            currentMaze.solutionCell = currentMaze.nodes[currentMaze.nodes.Count() - 1];            
+            currentMaze.foundSolution = false;
 
-            //Start with the first cell in the array (there's only 1 node with a y-coordinate of 1).            
-            Globals.foundSolution = false;
-            var currentCell = Globals.nodes[0];
-            Globals.checkedCells.Add(currentCell);
-            Globals.path.Add(currentCell);
-            RunMazeMove(currentCell);            
+            // Now let's get started with the first "node" (we know from the assumptions that there's exactly 1 node with a y-coordinate of 1).
+            var currentCell = currentMaze.nodes[0];
+            currentMaze.checkedCells.Add(currentCell);
+            currentMaze.path.Add(currentCell);
+
+            // And now we're going thru the maze
+            RunMazeMove(currentCell, currentMaze);
+
+
+            // After all the moves are done, print out the solution.
+            Console.WriteLine($"Path for {mazeFile}: ");
+            foreach (Cell pathCell in currentMaze.path)
+            {
+                Console.WriteLine($"({pathCell.Y }, {pathCell.X})");
+            }
 
         }
 
-        static void RunMazeMove(Cell currentCell)
+        static void RunMazeMove(Cell currentCell, Maze currentMaze)
         {
-            //Console.WriteLine("PATH: ");
-            //foreach (Cell coord in Globals.path)
-            //{
-            //    Console.WriteLine(GetAllProperties(coord));
-            //}
+
             // EXIT CONDITION: check if you've reached the end of the maze
-            if (currentCell == Globals.solutionCell)
+            if (currentCell == currentMaze.solutionCell)
             {
-                Globals.foundSolution = true;
+                currentMaze.foundSolution = true;
                 return;
             }
-            if (!Globals.foundSolution)
+            if (!currentMaze.foundSolution)
             {
             
                 // Otherwise, not done with maze yet. Check if you can make a move to a neighboring Cell.
-                var neighbors = DefineNeighbors(currentCell);
-                var neighbor = CheckNeighbors(neighbors);
-                //foreach (Cell checkedCell in Globals.checkedCells)
-                //{
-                //    Console.WriteLine("Checked: " + GetAllProperties(checkedCell));
-                //};
+                // Define the neighbors.
+                var neighbors = DefineNeighbors(currentCell, currentMaze);
+
+                // Then, check if we can make a valid move to one of the neighbors.
+                var neighbor = CheckNeighbors(neighbors, currentMaze);
 
                 if (neighbor != null)
                 {
-                    //Console.WriteLine("current neighbor: " + GetAllProperties(neighbor));
-                    Globals.path.Add(neighbor);                    
+                    // we found a legit neighbor, so we'll add them to the Path for the next round. 
+                    currentMaze.path.Add(neighbor);                    
                 } else
                 {
-                    //Console.WriteLine("no valid neighbors from here!");
-                    //none of the neighboring moves are valid, so go and run fn again with currentCell's next unchecked neighbor.
-                    Globals.path.RemoveAt(Globals.path.Count - 1);                  
+                    // no neighboring moves were valid, so backtrack from that dead end.
+                    currentMaze.path.RemoveAt(currentMaze.path.Count - 1);                  
                 }
-                //foreach (Cell cell in Globals.checkedCells) {
-                //    Console.WriteLine(GetAllProperties(cell));
-                //}
-                RunMazeMove(Globals.path[Globals.path.Count - 1]);
 
+                // start the next round: we will check based on the last node in current path
+                RunMazeMove(currentMaze.path[currentMaze.path.Count - 1], currentMaze);
             }
 
 
-            static List<Cell> DefineNeighbors(Cell currentCell)
+            static List<Cell> DefineNeighbors(Cell currentCell, Maze currentMaze)
             {
                 var neighbors = new List<Cell>();
-                var downNeighbor = Globals.nodes.FirstOrDefault(node => node.Y == currentCell.Y + 1 && node.X == currentCell.X);
+                var downNeighbor = currentMaze.nodes.FirstOrDefault(node => node.Y == currentCell.Y + 1 && node.X == currentCell.X);
                 if (downNeighbor != null)
                 {
                     neighbors.Add(downNeighbor);
                 }
-                var leftNeighbor = Globals.nodes.FirstOrDefault(node => node.Y == currentCell.Y && node.X == currentCell.X - 1);
+
+                var leftNeighbor = currentMaze.nodes.FirstOrDefault(node => node.Y == currentCell.Y && node.X == currentCell.X - 1);
                 if (leftNeighbor != null)
                 {
                     neighbors.Add(leftNeighbor);
                 }
-                var upNeighbor = Globals.nodes.FirstOrDefault(node => node.Y == currentCell.Y - 1 && node.X == currentCell.X);
+
+                var upNeighbor = currentMaze.nodes.FirstOrDefault(node => node.Y == currentCell.Y - 1 && node.X == currentCell.X);
                 if (upNeighbor != null)
                 {
                     neighbors.Add(upNeighbor);
                 }
-                var rightNeighbor = Globals.nodes.FirstOrDefault(node => node.Y == currentCell.Y && node.X == currentCell.X + 1);
+
+                var rightNeighbor = currentMaze.nodes.FirstOrDefault(node => node.Y == currentCell.Y && node.X == currentCell.X + 1);
                 if (rightNeighbor != null)
                 {
                     neighbors.Add(rightNeighbor);
@@ -147,11 +142,11 @@ namespace EnduranceApp
                 return neighbors;
             }
 
-            static Cell CheckNeighbors(List<Cell> neighbors)
+            static Cell CheckNeighbors(List<Cell> neighbors, Maze currentMaze)
             {                
                 foreach (Cell neighbor in neighbors)
                 {
-                    if (ValidMazeMove(neighbor))
+                    if (ValidMazeMove(neighbor, currentMaze))
                     {
                         return neighbor;
                     }
@@ -159,37 +154,23 @@ namespace EnduranceApp
                 return null;
             }
 
-            static bool ValidMazeMove(Cell targetCell)
+            static bool ValidMazeMove(Cell targetCell, Maze currentMaze)
             {
-                if (ValidateCellInBounds(targetCell) && ValidateCellNotCheckedYet(targetCell))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ValidateCellInBounds(targetCell, currentMaze) && ValidateCellNotCheckedYet(targetCell, currentMaze) ? true : false;
             }
 
 
-            static bool ValidateCellInBounds(Cell cellToCheck)
+            static bool ValidateCellInBounds(Cell cellToCheck, Maze currentMaze)
             {
-                if (cellToCheck.Y <= Globals.numRows && cellToCheck.X <= Globals.numCols)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return cellToCheck.Y <= currentMaze.numRows && cellToCheck.X <= currentMaze.numCols ? true : false;
             }
 
 
-            static bool ValidateCellNotCheckedYet(Cell cellToCheck)
+            static bool ValidateCellNotCheckedYet(Cell cellToCheck, Maze currentMaze)
             {
-                if (!Globals.checkedCells.Contains(cellToCheck))
+                if (!currentMaze.checkedCells.Contains(cellToCheck))
                 {
-                    Globals.checkedCells.Add(cellToCheck);
+                    currentMaze.checkedCells.Add(cellToCheck);
                     return true;
                 }
                 else

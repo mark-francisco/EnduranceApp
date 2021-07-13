@@ -5,14 +5,14 @@ namespace EnduranceApp
 {
     public class Maze
     {
-        public Cell solutionCell;
-        public List<Cell> checkedCells;
-        public Cell currentCell;
-        public bool foundSolution;
         public int numRows;
         public int numCols;
-        public List<string> path;
+        public Cell solutionCell;
+        public bool foundSolution;
         public List<Cell> nodes;
+        public List<Cell> checkedCells = new List<Cell>();
+        public Cell currentCell;
+        public List<Cell> path = new List<Cell>();
 
         public void SetUpMaze(string mazeFile)
         {
