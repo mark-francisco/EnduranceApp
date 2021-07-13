@@ -11,11 +11,11 @@ namespace EnduranceApp
 
         public static Cell solutionCell;
         public static List<Cell> checkedCells = new List<Cell>();
-        public static Cell currentCell;
+        //public static Cell currentCell;
         public static bool foundSolution;
         public static int numRows;
         public static int numCols;
-        public static List<string> path;
+        public static List<Cell> path = new List<Cell>();
         public static List<Cell> nodes;
         
     }
